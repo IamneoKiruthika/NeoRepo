@@ -1,4 +1,4 @@
-name: Build and deploy ASP.Net Core app to Azure Web App - protechbapp24
+name: Build and deploy ASP.Net Core app to Azure Web App - eduhubapp24
 
 on:
   push:
@@ -23,30 +23,27 @@ jobs:
         run: |
           cd dotnetapp/dotnetapp  # Adjust this path to your project directory
           dotnet restore
-
       - name: Build with dotnet
         run: |
           cd dotnetapp/dotnetapp  # Adjust this path to your project directory
           dotnet build --configuration Release
-
       - name: Publish artifact
         run: |
           cd dotnetapp/dotnetapp  # Adjust this path to your project directory
-          dotnet publish -c Release -o ${{github.workspace}}/myapp
-
+          dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/myapp
       - name: Upload artifact for deployment
         uses: actions/upload-artifact@v2
         with:
           name: dotnet-app
-          path: ${{github.workspace}}/myapp
+          path: ${{env.DOTNET_ROOT}}/myapp
 
   deploy:
     runs-on: windows-latest
     needs: build
     environment:
       name: 'Production'
-      url: 'https://protechbapp24.azurewebsites.net' # Replace with your Azure Web App URL
-
+      url:  'https://protechbapp24.azurewebsites.net' # Replace with your Azure Web App URL
+    
     steps:
       - name: Download artifact
         uses: actions/download-artifact@v2
@@ -55,9 +52,10 @@ jobs:
           path: ${{ github.workspace }}/myapp
 
       - name: Deploy to Azure Web App
+        id: deploy-to-webapp
         uses: azure/webapps-deploy@v2
         with:
-          app-name: 'protechbapp24'  # Replace with your Azure Web App name
-          slot-name: 'Production'  # Replace with your Azure Web App deployment slot if needed
-          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}  # Ensure this secret is correctly set
+          app-name: 'protechapp24'  # Replace with your Azure Web App name
+          slot-name: 'Production'  # Replace with your Azure Web App deployment slot
+          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}  # Replace with your Azure Web App publish profile
           package: ${{ github.workspace }}/myapp  # Adjust this path if needed
