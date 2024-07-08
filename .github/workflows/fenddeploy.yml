@@ -34,7 +34,9 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: build-artifacts
-        path: reactapp/build
+        path: |
+          reactapp/build
+          reactapp/dist
 
     - name: Download build artifacts
       uses: actions/download-artifact@v3
@@ -45,6 +47,6 @@ jobs:
     - name: Deploy to Azure Web App
       uses: azure/webapps-deploy@v2
       with:
-        app-name: 'eduhubfend'  # Replace with your Azure Web App name
+        app-name: 'protechfapp'  # Updated Azure Web App name
         package: build
-        publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_3675730686A440378C3FA43BC3C6E64E }}
+        publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
