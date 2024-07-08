@@ -42,7 +42,7 @@ jobs:
     needs: build
     environment:
       name: 'Production'
-      url: protechbapp24.azurewebsites.net # Replace with your Azure Web App URL
+      url: 'protechbapp24.azurewebsites.net' # Replace with your Azure Web App URL
     
     steps:
       - name: Download artifact
