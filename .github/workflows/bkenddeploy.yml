@@ -1,0 +1,61 @@
+name: Build and deploy ASP.Net Core app to Azure Web App - eduhubapp24
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up .NET Core SDK
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: '6.x'  # Adjust to your .NET Core version
+
+      - name: Restore dependencies
+        run: |
+          cd Eduhub/Eduhub/dotnetapp  # Adjust this path to your project directory
+          dotnet restore
+      - name: Build with dotnet
+        run: |
+          cd Eduhub/Eduhub/dotnetapp  # Adjust this path to your project directory
+          dotnet build --configuration Release
+      - name: Publish artifact
+        run: |
+          cd Eduhub/Eduhub/dotnetapp  # Adjust this path to your project directory
+          dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/myapp
+      - name: Upload artifact for deployment
+        uses: actions/upload-artifact@v2
+        with:
+          name: dotnet-app
+          path: ${{env.DOTNET_ROOT}}/myapp
+
+  deploy:
+    runs-on: windows-latest
+    needs: build
+    environment:
+      name: 'Production'
+      url:  # Replace with your Azure Web App URL
+    
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: dotnet-app
+          path: ${{ github.workspace }}/myapp
+
+      - name: Deploy to Azure Web App
+        id: deploy-to-webapp
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: 'eduhubapp24'  # Replace with your Azure Web App name
+          slot-name: 'Production'  # Replace with your Azure Web App deployment slot
+          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}  # Replace with your Azure Web App publish profile
+          package: ${{ github.workspace }}/myapp  # Adjust this path if needed
