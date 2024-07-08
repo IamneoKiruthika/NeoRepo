@@ -20,7 +20,7 @@ jobs:
 
     - name: Install dependencies
       run: npm install
-      working-directory: Eduhub/reactapp
+      working-directory: reactapp
 
     - name: Set CI to false
       run: |
@@ -28,15 +28,15 @@ jobs:
 
     - name: Run build
       run: npm run build --if-present
-      working-directory: Eduhub/reactapp
+      working-directory: reactapp
 
     - name: Upload build artifacts
       uses: actions/upload-artifact@v3
       with:
         name: build-artifacts
         path: |
-          Eduhub/reactapp/build
-          Eduhub/reactapp/dist
+          reactapp/build
+          reactapp/dist
 
     - name: Download build artifacts
       uses: actions/download-artifact@v3
@@ -47,6 +47,6 @@ jobs:
     - name: Deploy to Azure Web App
       uses: azure/webapps-deploy@v2
       with:
-        app-name: 'eduhubfend'  # Replace with your Azure Web App name
+        app-name: 'protechfapp'  # Replace with your Azure Web App name
         package: build
-        publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+        publish-profile: ${{ secrets.AzureAppService_PublishProfile_dcb2049346d84750a1d0893d74637f66   }}
