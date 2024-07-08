@@ -17,4 +17,4 @@ jobs:
       run: sudo apt-get install -y unzip
 
     - name: Unzip folder
-      run: unzip path/to/your/zipfile.zip -d path/to/destination
+      run: unzip TestProject.zip -d .
