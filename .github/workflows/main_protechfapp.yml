@@ -19,12 +19,12 @@ jobs:
         with:
           node-version: '14'
 
-      - name: Set CI to false
-        run: echo "CI=false" >> $GITHUB_ENV
-
       - name: Install dependencies
         run: |
           npm install
+          
+      - name: Set CI to false
+        run: echo "CI=false" >> $GITHUB_ENV
 
       - name: Set CI to false after dependency installation
         run: echo "CI=false" >> $GITHUB_ENV
