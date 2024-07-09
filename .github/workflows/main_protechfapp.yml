@@ -26,11 +26,9 @@ jobs:
       - name: Set CI to false
         run: echo "CI=false" >> $GITHUB_ENV
 
-      - name: Set CI to false after dependency installation
-        run: echo "CI=false" >> $GITHUB_ENV
-
       - name: Run build
         run: npm run build --if-present
+        working-directory: reactapp
 
       - name: Zip build artifacts
         run: zip -r build.zip ./reactapp/build
