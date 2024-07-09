@@ -1,4 +1,4 @@
-name: Node.js CI/CD
+name: Deploy React App
 
 on:
   push:
@@ -6,57 +6,41 @@ on:
       - main
 
 jobs:
-  build-and-deploy:
+  deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
+    - name: Checkout repository
+      uses: actions/checkout@v3
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '18'
+    - name: List build directory contents
+      run: ls -la reactapp/build
 
-      - name: Install dependencies
-        run: npm install
-        working-directory: reactapp
+    - name: Zip build artifacts
+      run: zip -r build.zip build
+      working-directory: reactapp
 
-      - name: Set CI to false
-        run: echo "CI=false" >> $GITHUB_ENV
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: build-artifacts
+        path: reactapp/build.zip
 
-      - name: Run build
-        run: npm run build --if-present
-        working-directory: reactapp
+    - name: Download build artifacts
+      uses: actions/download-artifact@v3
+      with:
+        name: build-artifacts
+        path: .
 
-      - name: List build directory contents
-        run: ls -la reactapp/build
+    - name: Unzip build artifacts to wwwroot
+      run: unzip build-artifacts/build.zip -d $HOME/site/wwwroot
 
-      - name: Zip build artifacts
-        run: zip -r build.zip build
-        working-directory: reactapp
+    - name: List wwwroot directory contents
+      run: ls -la $HOME/site/wwwroot
 
-      - name: Upload build artifacts
-        uses: actions/upload-artifact@v3
-        with:
-          name: build-artifacts
-          path: reactapp/build.zip
-
-      - name: Download build artifacts
-        uses: actions/download-artifact@v3
-        with:
-          name: build-artifacts
-          path: .
-
-      - name: Unzip build artifacts to wwwroot
-        run: unzip -o build-artifacts/build.zip -d $HOME/site/wwwroot
-
-      - name: List wwwroot directory contents
-        run: ls -la $HOME/site/wwwroot
-
-      - name: Deploy to Azure Web App
-        uses: azure/webapps-deploy@v2
-        with:
-          app-name: 'protechfapp'
-          package: $HOME/site/wwwroot
-          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+    - name: Deploy to Azure Web App
+      uses: azure/webapps-deploy@v2
+      with:
+        app-name: 'protechfapp'
+        package: $HOME/site/wwwroot
+        publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
