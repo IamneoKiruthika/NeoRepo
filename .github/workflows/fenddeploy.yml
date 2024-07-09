@@ -23,8 +23,7 @@ jobs:
       working-directory: reactapp
 
     - name: Set CI to false
-      run: |
-        echo "CI=false" >> $GITHUB_ENV
+      run: echo "CI=false" >> $GITHUB_ENV
 
     - name: Run build
       run: npm run build --if-present
@@ -57,12 +56,15 @@ jobs:
 
     - name: Move build artifacts to wwwroot
       run: |
-        mkdir -p $HOME/site/wwwroot
-        mv build/* $HOME/site/wwwroot
+        mkdir -p site/wwwroot
+        mv build/* site/wwwroot
+
+    - name: List wwwroot directory contents
+      run: ls -la site/wwwroot
 
     - name: Deploy to Azure Web App
       uses: azure/webapps-deploy@v2
       with:
         app-name: 'protechfapp'
-        package: $HOME/site/wwwroot
+        package: site/wwwroot
         publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
